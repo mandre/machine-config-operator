@@ -4,13 +4,13 @@ path: "/etc/kubernetes/static-pod-resources/keepalived/keepalived.conf.template"
 contents:
   inline: |
     vrrp_script chk_ocp {
-        script "curl -o /dev/null -kLs https://0:6443/readyz"
+        script "/usr/bin/curl -o /dev/null -kLs https://0:6443/readyz"
         interval 1
         weight 50
     }
 
     vrrp_script chk_dns {
-        script "host -t SRV _etcd-server-ssl._tcp.${DOMAIN} localhost"
+        script "/usr/bin/host -t SRV _etcd-server-ssl._tcp.${DOMAIN} localhost"
         interval 1
         weight 50
     }
@@ -21,7 +21,7 @@ contents:
     #     weight 50
     # }
     
-    vrrp_instance vrrp_instance ${CLUSTER_NAME}_API {
+    vrrp_instance ${CLUSTER_NAME}_API {
         state BACKUP
         interface ${INTERFACE}
         virtual_router_id ${API_VRID}
