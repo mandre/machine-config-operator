@@ -48,7 +48,7 @@ contents:
       - name: coredns
         securityContext:
           privileged: true
-        image: quay.io/openshift-metal3/coredns-mdns:latest
+        image: quay.io/openshift/origin-coredns:latest
         args:
         - "--conf"
         - "/etc/coredns/Corefile"

@@ -30,7 +30,7 @@ contents:
         empty-dir: {}
       initContainers:
       - name: clusterrc-generation
-        # FIXME(mandre) should probably use something from the openshift namespace
+        # FIXME(mandre) move to the openshift namespaced image once it is available
         image: quay.io/openshift-metal3/kubeconfig-extractor:latest
         command:
         - "/usr/bin/kubeconfig-extractor"
@@ -53,8 +53,8 @@ contents:
           set -ex
 
           source /etc/kubernetes/static-pod-resources/clusterrc
-          # FIXME(mandre) this will have to do for now
-          # we need an ns1 record to fetch the DNS VIP
+          # TODO(mandre) this will have to do for now
+          # Eventually get everything from the PlatformStatus
           if [ -f /etc/kubernetes/static-pod-resources/clustervars ]; then
               source /etc/kubernetes/static-pod-resources/clustervars
           fi
@@ -103,8 +103,7 @@ contents:
       - name: keepalived
         securityContext:
           privileged: true
-        # FIXME(mandre) we need an image in the openshift namespace
-        image: quay.io/celebdor/keepalived:latest
+        image: quay.io/openshift/origin-keepalived-ipfailover:latest
         command:
         - /usr/sbin/keepalived
         args:
