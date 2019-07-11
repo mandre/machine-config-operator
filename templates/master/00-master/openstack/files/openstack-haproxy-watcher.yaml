@@ -14,6 +14,9 @@ contents:
         fi
     }
 
+    # NOTE(mandre) This script should be completely reworked as we now don't
+    # want to have the bootstrap node in there anymore
+
     # NOTE(mandre) this file is present on the first set of master nodes,
     # created during initial deployment. We're getting the $BOOTSTRAP_IP
     # variable from it.
@@ -47,8 +50,6 @@ contents:
         WORKERS=$(/bin/oc get nodes -l node-role.kubernetes.io/worker -ogo-template="$TEMPLATE")
     fi
 
-    # FIXME(mandre) we shouldn't need to add boostrap node here
-    # This should fix the back and forth between bootstrap and prod control plane
     if [[ -z "$MASTERS" ]];
     then
     cat > /etc/haproxy/haproxy.cfg.new << EOF
