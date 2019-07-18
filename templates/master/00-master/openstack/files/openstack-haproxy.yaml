@@ -34,6 +34,34 @@ contents:
       - name: chroot-host
         hostPath:
           path: "/"
+      initcontainers:
+      - name: haproxy-init-config
+        securityContext:
+          privileged: true
+        image: quay.io/openshift/origin-node:latest
+        env:
+        - name: api_port
+          value: "6443"
+        - name: lb_port
+          value: "7443"
+        command:
+        - "/bin/bash"
+        - "-c"
+        - |
+          #!/bin/bash
+          cat << EOF > /etc/haproxy/haproxy.cfg
+          # NOTE(shadower): this is the INITIAL haproxy.cfg created by the MCO
+          listen {{.EtcdDiscoveryDomain}}-api-masters
+              bind 0.0.0.0:$lb_port
+              mode tcp
+              balance roundrobin
+              server lb-api-vip-$api_port {{ .Infra.Status.PlatformStatus.OpenStack.ApiIntIp }} check port $api_port
+          EOF
+        volumeMounts:
+        - name: conf-dir
+          mountPath: "/etc/haproxy"
+        terminationMessagePolicy: FallbackToLogsOnError
+        imagePullPolicy: IfNotPresent
       containers:
       - name: haproxy-monitor
         securityContext:
