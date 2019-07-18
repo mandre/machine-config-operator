@@ -59,8 +59,8 @@ contents:
               source /etc/kubernetes/static-pod-resources/clustervars
           fi
           CLUSTER_NAME="$NAME"
-          : ${API_VIP:="{{ .Infra.Status.PlatformStatus.OpenStack.ApiIntIp }}"}
-          : ${DNS_VIP:="{{ .Infra.Status.PlatformStatus.OpenStack.NodeDnsIp }}"}
+          : ${API_VIP:="{{ .Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }}"}
+          : ${DNS_VIP:="{{ .Infra.Status.PlatformStatus.OpenStack.NodeDNSIP }}"}
           IFACE_CIDRS="$(ip addr show | grep -v "scope host" | grep -Po 'inet \K[\d.]+/[\d.]+' | xargs)"
           SUBNET_CIDR="$(/usr/local/bin/get_vip_subnet_cidr "$API_VIP" "$IFACE_CIDRS")"
           NET_MASK="$(echo $SUBNET_CIDR | cut -d "/" -f 2)"

@@ -55,7 +55,7 @@ contents:
         bind 0.0.0.0:7443
         mode tcp
         balance roundrobin
-        server lb-api-vip-6443 {{ .Infra.Status.PlatformStatus.OpenStack.ApiIntIp }} check port 6443
+        server lb-api-vip-6443 {{ .Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }} check port 6443
     EOF
 
         if [[ -n "$WORKERS" ]]; then

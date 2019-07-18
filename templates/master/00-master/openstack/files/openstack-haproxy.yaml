@@ -55,7 +55,7 @@ contents:
               bind 0.0.0.0:$lb_port
               mode tcp
               balance roundrobin
-              server lb-api-vip-$api_port {{ .Infra.Status.PlatformStatus.OpenStack.ApiIntIp }} check port $api_port
+              server lb-api-vip-$api_port {{ .Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }} check port $api_port
           EOF
         volumeMounts:
         - name: conf-dir
