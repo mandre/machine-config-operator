@@ -1,12 +1,12 @@
 filesystem: "root"
 mode: 0644
-path: "/etc/kubernetes/manifests/coredns.yaml"
+path: "/etc/kubernetes/manifests/mdns-publisher.yaml"
 contents:
   inline: |
     kind: Pod
     apiVersion: v1
     metadata:
-      name: coredns
+      name: mdns-publisher
       namespace: openshift-kni-infra
       creationTimestamp:
       deletionGracePeriodSeconds: 65
@@ -16,13 +16,13 @@ contents:
       volumes:
       - name: resource-dir
         hostPath:
-          path: "/etc/kubernetes/static-pod-resources/coredns"
+          path: "/etc/kubernetes/static-pod-resources/mdns"
       - name: kubeconfig
         hostPath:
           path: "/etc/kubernetes/kubeconfig"
       - name: conf-dir
         hostPath:
-          path: "/etc/coredns"
+          path: "/etc/mdns"
       initContainers:
       - name: render-config
         image: {{ .Images.baremetalRuntimeCfgImage }}
@@ -38,7 +38,7 @@ contents:
         - "{{ .Infra.Status.PlatformStatus.OpenStack.IngressIP }}"
         - "/config"
         - "--out-dir"
-        - "/etc/coredns"
+        - "/etc/mdns"
         resources: {}
         volumeMounts:
         - name: kubeconfig
@@ -46,42 +46,26 @@ contents:
         - name: resource-dir
           mountPath: "/config"
         - name: conf-dir
-          mountPath: "/etc/coredns"
+          mountPath: "/etc/mdns"
         imagePullPolicy: IfNotPresent
       containers:
-      - name: coredns
-        securityContext:
-          privileged: true
-        image: {{.Images.corednsImage}}
+      - name: mdns-publisher
+        image: {{.Images.mdnsPublisherImage}}
         args:
-        - "--conf"
-        - "/etc/coredns/Corefile"
+        - "--debug"
         resources:
           requests:
             cpu: 150m
             memory: 1Gi
         volumeMounts:
         - name: conf-dir
-          mountPath: "/etc/coredns"
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          successThreshold: 1
-          failureThreshold: 3
-          timeoutSeconds: 10
+          mountPath: "/etc/mdns"
         livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 60
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 5
+          exec:
+            command:
+            - pgrep
+            - mdns-publisher
+          initialDelaySeconds: 10
         terminationMessagePolicy: FallbackToLogsOnError
         imagePullPolicy: IfNotPresent
       hostNetwork: true

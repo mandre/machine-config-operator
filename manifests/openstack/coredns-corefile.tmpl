@@ -1,0 +1,12 @@
+. {
+    errors
+    health
+    mdns {{ .EtcdDiscoveryDomain }} {{`{{.Cluster.MasterAmount}}`}} {{`{{.Cluster.Name}}`}}
+    forward . {{``{{- range $upstream := .DNSUpstreams}} {{$upstream}}{{- end}}`}}
+    cache 30
+    reload
+    hosts /etc/coredns/api-int.hosts $DOMAIN {
+        {{ .Infra.Status.PlatformStatus.OpenStack.ApiServerInternalIP }} api-int.{{ .EtcdDiscoveryDomain }}
+        fallthrough
+    }
+}

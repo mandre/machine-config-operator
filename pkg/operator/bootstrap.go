@@ -116,9 +116,15 @@ func RenderBootstrap(
 		templatectrl.SetupEtcdEnvKey:         imgs.MachineConfigOperator,
 		templatectrl.InfraImageKey:           imgs.InfraImage,
 		templatectrl.KubeClientAgentImageKey: imgs.KubeClientAgent,
+		templatectrl.KeepalivedKey:           imgs.Keepalived,
+		templatectrl.CorednsKey:              imgs.Coredns,
+		templatectrl.MdnsPublisherKey:        imgs.MdnsPublisher,
+		templatectrl.HaproxyKey:              imgs.Haproxy,
+		templatectrl.BaremetalRuntimeCfgKey:  imgs.BaremetalRuntimeCfg,
 	}
 
-	config := getRenderConfig("", string(filesData[kubeAPIServerServingCA]), spec, &imgs.RenderConfigImages, infra.Status.APIServerInternalURL)
+	// NOTE(egarcia): will need to be unhardcoded and upgraded to generic structure
+	config := getRenderConfig("", string(filesData[kubeAPIServerServingCA]), spec, &imgs.RenderConfigImages, infra.Status.APIServerInternalURL, infra)
 
 	manifests := []struct {
 		name     string
@@ -145,6 +151,18 @@ func RenderBootstrap(
 	}, {
 		name:     "manifests/machineconfigserver/kube-apiserver-serving-ca-configmap.yaml",
 		filename: "manifests/kube-apiserver-serving-ca-configmap.yaml",
+	}, {
+		name:     "manifests/openstack/coredns.yaml",
+		filename: "manifests/coredns.yaml",
+	}, {
+		name:     "manifests/openstack/coredns-corefile.tmpl",
+		filename: "static-pod-resources/coredns/Corefile.tmpl",
+	}, {
+		name:     "manifests/openstack/keepalived.yaml",
+		filename: "manifests/keepalived.yaml",
+	}, {
+		name:     "manifests/openstack/keepalived.conf.tmpl",
+		filename: "static-pod-resources/keepalived/keepalived.conf.tmpl",
 	}}
 	for _, m := range manifests {
 		var b []byte

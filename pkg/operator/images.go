@@ -14,13 +14,25 @@ type Images struct {
 
 // RenderConfigImages are image names used to render templates under ./manifests/
 type RenderConfigImages struct {
-	MachineConfigOperator string `json:"machineConfigOperator"`
-	MachineOSContent      string `json:"machineOSContent"`
+	MachineConfigOperator        string `json:"machineConfigOperator"`
+	MachineOSContent             string `json:"machineOSContent"`
+	// These have to be named differently from the ones in ControllerConfigImages
+	// or we get errors about ambiguous selectors because both structs are
+	// combined in the Images struct.
+	KeepalivedBootstrap          string `json:"keepalived"`
+	CorednsBootstrap             string `json:"coredns"`
+	BaremetalRuntimeCfgBootstrap string `json:"baremetalRuntimeCfg"`
+}
 }
 
 // ControllerConfigImages are image names used to render templates under ./templates/
 type ControllerConfigImages struct {
-	Etcd            string `json:"etcd"`
-	InfraImage      string `json:"infraImage"`
-	KubeClientAgent string `json:"kubeClientAgentImage"`
+	Etcd                string `json:"etcd"`
+	InfraImage          string `json:"infraImage"`
+	KubeClientAgent     string `json:"kubeClientAgentImage"`
+	Keepalived          string `json:"keepalived"`
+	Coredns             string `json:"coredns"`
+	MdnsPublisher       string `json:"mdnsPublisher"`
+	Haproxy             string `json:"haproxy"`
+	BaremetalRuntimeCfg string `json:"baremetalRuntimeCfg"`
 }
