@@ -9,7 +9,7 @@ contents:
         weight 50
     }
     vrrp_script chk_dns {
-        script "host -t SRV _etcd-server-ssl._tcp.{{`{{ .EtcdDiscoveryDomain }}`}} localhost"
+        script "host -t SRV _etcd-server-ssl._tcp.{{`{{ .Cluster.Domain }}`}} localhost"
         interval 1
         weight 50
     }
