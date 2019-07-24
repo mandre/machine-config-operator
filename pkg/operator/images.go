@@ -23,7 +23,6 @@ type RenderConfigImages struct {
 	CorednsBootstrap             string `json:"coredns"`
 	BaremetalRuntimeCfgBootstrap string `json:"baremetalRuntimeCfg"`
 }
-}
 
 // ControllerConfigImages are image names used to render templates under ./templates/
 type ControllerConfigImages struct {

@@ -20,7 +20,7 @@ spec:
     empty-dir: {}
   initContainers:
   - name: render-config
-      image: {{ .Images.baremetalRuntimeCfgImage }}
+      image: {{ .Images.BaremetalRuntimeCfgBootstrap }}
       command:
       - runtimecfg
       - render
