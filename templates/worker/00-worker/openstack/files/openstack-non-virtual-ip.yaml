@@ -94,7 +94,10 @@ contents:
 
 
     def interface_cidrs(filter_func=None):
-        out = subprocess.check_output(["ip", "-o", "addr", "show"])
+        try:
+            out = subprocess.check_output(["ip", "-o", "addr", "show"], encoding=sys.stdout.encoding)
+        except TypeError:  # python2
+            out = subprocess.check_output(["ip", "-o", "addr", "show"])
         for addr in (line_to_address(line) for line in out.splitlines()):
             if filter_func(addr):
                 yield addr
