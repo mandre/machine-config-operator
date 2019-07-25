@@ -123,8 +123,7 @@ func RenderBootstrap(
 		templatectrl.BaremetalRuntimeCfgKey:  imgs.BaremetalRuntimeCfg,
 	}
 
-	// NOTE(egarcia): will need to be unhardcoded and upgraded to generic structure
-	config := getRenderConfig("", string(filesData[kubeAPIServerServingCA]), spec, &imgs.RenderConfigImages, infra.Status.APIServerInternalURL, infra)
+	config := getRenderConfig("", string(filesData[kubeAPIServerServingCA]), spec, &imgs.RenderConfigImages, infra.Status.APIServerInternalURL)
 
 	manifests := []struct {
 		name     string
