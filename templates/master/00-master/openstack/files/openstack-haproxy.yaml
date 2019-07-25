@@ -73,7 +73,7 @@ contents:
           initialDelaySeconds: 10
           httpGet:
             path: /healthz
-            port: 1936
+            port: 50936
         terminationMessagePolicy: FallbackToLogsOnError
         imagePullPolicy: IfNotPresent
       - name: haproxy-monitor
