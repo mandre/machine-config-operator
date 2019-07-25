@@ -7,7 +7,7 @@ set -o pipefail
 SCRIPT_ROOT=$(dirname ${BASH_SOURCE})/..
 
 set -x
-go-bindata \
+$GOPATH/bin/go-bindata \
     -nocompress \
     -nometadata \
     -pkg "assets" \

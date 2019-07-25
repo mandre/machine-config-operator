@@ -1321,15 +1321,16 @@ func manifestsMasterMachineconfigpoolYaml() (*asset, error) {
 var _manifestsOpenstackCorednsCorefileTmpl = []byte(`. {
     errors
     health
-    mdns {{ .Infra.Status.EtcdDiscoveryDomain }} {{`+"`"+`{{.Cluster.MasterAmount}}`+"`"+`}} {{`+"`"+`{{.Cluster.Name}}`+"`"+`}}
+    mdns {{ .ControllerConfig.EtcdDiscoveryDomain }} {{`+"`"+`{{.Cluster.MasterAmount}}`+"`"+`}} {{`+"`"+`{{.Cluster.Name}}`+"`"+`}}
     forward . {{`+"`"+`{{- range $upstream := .DNSUpstreams}} {{$upstream}}{{- end}}`+"`"+`}}
     cache 30
     reload
-    hosts /etc/coredns/api-int.hosts $DOMAIN {
-        {{ .Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }} api-int.{{ .Infra.Status.EtcdDiscoveryDomain }}
+    hosts /etc/coredns/api-int.hosts {{ .ControllerConfig.EtcdDiscoveryDomain }} {
+        {{ .ControllerConfig.Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }} api-int.{{ .ControllerConfig.EtcdDiscoveryDomain }}
         fallthrough
     }
-}`)
+}
+`)
 
 func manifestsOpenstackCorednsCorefileTmplBytes() ([]byte, error) {
 	return _manifestsOpenstackCorednsCorefileTmpl, nil
@@ -1351,7 +1352,7 @@ kind: Pod
 apiVersion: v1
 metadata:
   name: coredns
-  namespace: openshift-kni-infra
+  namespace: {{ .TargetNamespace }}
   creationTimestamp:
   deletionGracePeriodSeconds: 65
   labels:
@@ -1377,11 +1378,11 @@ spec:
     - render
     - "/etc/kubernetes/kubeconfig"
     - "--api-vip"
-    - "{{ .Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }}"
+    - "{{ .ControllerConfig.Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }}"
     - "--dns-vip"
-    - "{{ .Infra.Status.PlatformStatus.OpenStack.NodeDNSIP }}"
+    - "{{ .ControllerConfig.Infra.Status.PlatformStatus.OpenStack.NodeDNSIP }}"
     - "--ingress-vip"
-    - "{{ .Infra.Status.PlatformStatus.OpenStack.IngressIP }}"
+    - "{{ .ControllerConfig.Infra.Status.PlatformStatus.OpenStack.IngressIP }}"
     - "/config"
     - "--out-dir"
     - "/etc/coredns"
@@ -1479,7 +1480,7 @@ vrrp_instance {{`+"`"+`{{.Cluster.Name}}`+"`"+`}}_API {
 vrrp_instance {{`+"`"+`{{.Cluster.Name}}`+"`"+`}}_DNS {
     state MASTER
     interface {{`+"`"+`{{.VRRPInterface}}`+"`"+`}}
-    virtual_router_id {{`+"`"+`{{ .Cluster.APIVIP }}`+"`"+`}}/{{`+"`"+`{{ .Cluster.VIPNetmask }}`+"`"+`}}
+    virtual_router_id {{`+"`"+`{{.Cluster.DNSVirtualRouterID }}`+"`"+`}}
     priority 140
     advert_int 1
     authentication {
@@ -1489,7 +1490,8 @@ vrrp_instance {{`+"`"+`{{.Cluster.Name}}`+"`"+`}}_DNS {
     virtual_ipaddress {
         {{`+"`"+`{{ .Cluster.DNSVIP }}`+"`"+`}}/{{`+"`"+`{{ .Cluster.VIPNetmask }}`+"`"+`}}
     }
-}`)
+}
+`)
 
 func manifestsOpenstackKeepalivedConfTmplBytes() ([]byte, error) {
 	return _manifestsOpenstackKeepalivedConfTmpl, nil
@@ -1511,7 +1513,7 @@ kind: Pod
 apiVersion: v1
 metadata:
   name: keepalived
-  namespace: openshift-kni-infra
+  namespace: {{ .TargetNamespace }}
   creationTimestamp:
   deletionGracePeriodSeconds: 65
   labels:
@@ -1528,34 +1530,34 @@ spec:
     empty-dir: {}
   initContainers:
   - name: render-config
-      image: {{ .Images.BaremetalRuntimeCfgBootstrap }}
-      command:
-      - runtimecfg
-      - render
-      - "/etc/kubernetes/kubeconfig"
-      - "--api-vip"
-      - "{{ .Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }}"
-      - "--dns-vip"
-      - "{{ .Infra.Status.PlatformStatus.OpenStack.NodeDNSIP }}"
-      - "--ingress-vip"
-      - "{{ .Infra.Status.PlatformStatus.OpenStack.IngressIP }}"
-      - "/config"
-      - "--out-dir"
-      - "/etc/keepalived"
-      resources: {}
-      volumeMounts:
-      - name: resource-dir
-        mountPath: "/config"
-      - name: kubeconfig
-        mountPath: "/etc/kubernetes/kubeconfig"
-      - name: conf-dir
-        mountPath: "/etc/keepalived"
-      imagePullPolicy: IfNotPresent
+    image: {{ .Images.BaremetalRuntimeCfgBootstrap }}
+    command:
+    - runtimecfg
+    - render
+    - "/etc/kubernetes/kubeconfig"
+    - "--api-vip"
+    - "{{ .ControllerConfig.Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }}"
+    - "--dns-vip"
+    - "{{ .ControllerConfig.Infra.Status.PlatformStatus.OpenStack.NodeDNSIP }}"
+    - "--ingress-vip"
+    - "{{ .ControllerConfig.Infra.Status.PlatformStatus.OpenStack.IngressIP }}"
+    - "/config"
+    - "--out-dir"
+    - "/etc/keepalived"
+    resources: {}
+    volumeMounts:
+    - name: resource-dir
+      mountPath: "/config"
+    - name: kubeconfig
+      mountPath: "/etc/kubernetes/kubeconfig"
+    - name: conf-dir
+      mountPath: "/etc/keepalived"
+    imagePullPolicy: IfNotPresent
   containers:
   - name: keepalived
     securityContext:
       privileged: true
-    image: quay.io/celebdor/keepalived:latest
+    image: {{ .Images.KeepalivedBootstrap }}
     command:
     - /usr/sbin/keepalived
     args:
@@ -1578,7 +1580,8 @@ spec:
   tolerations:
   - operator: Exists
   priorityClassName: system-node-critical
-status: {}`)
+status: {}
+`)
 
 func manifestsOpenstackKeepalivedYamlBytes() ([]byte, error) {
 	return _manifestsOpenstackKeepalivedYaml, nil
