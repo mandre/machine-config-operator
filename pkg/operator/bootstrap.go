@@ -151,7 +151,12 @@ func RenderBootstrap(
 	}, {
 		name:     "manifests/machineconfigserver/kube-apiserver-serving-ca-configmap.yaml",
 		filename: "manifests/kube-apiserver-serving-ca-configmap.yaml",
-	}, {
+	}}
+	openstackManifests := []struct {
+		name     string
+		data     []byte
+		filename string
+	}{{
 		name:     "manifests/openstack/coredns.yaml",
 		filename: "manifests/coredns.yaml",
 	}, {
@@ -164,6 +169,9 @@ func RenderBootstrap(
 		name:     "manifests/openstack/keepalived.conf.tmpl",
 		filename: "static-pod-resources/keepalived/keepalived.conf.tmpl",
 	}}
+	if infra.Status.PlatformStatus.Type == configv1.OpenStackPlatformType {
+		manifests = append(manifests, openstackManifests...)
+	}
 	for _, m := range manifests {
 		var b []byte
 		var err error

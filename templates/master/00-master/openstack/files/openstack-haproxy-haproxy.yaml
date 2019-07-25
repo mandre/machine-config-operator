@@ -17,6 +17,11 @@ contents:
     frontend  main
       bind :{{`{{ .LBConfig.LbPort }}`}}
       default_backend masters
+    listen health_check_http_url
+      bind :50936
+      mode http
+      monitor-uri /healthz
+      option dontlognull
     listen stats
       bind 127.0.0.1:{{`{{ .LBConfig.StatPort }}`}}
       mode http

@@ -1,6 +1,6 @@
 filesystem: "root"
 mode: 0644
-path: "/etc/kubernetes/static-pod-resources/mdns/config.tmpl"
+path: "/etc/kubernetes/static-pod-resources/mdns/config.hcl.tmpl"
 contents:
   inline: |
     bind_address = "{{`{{ .NonVirtualIP }}`}}"
