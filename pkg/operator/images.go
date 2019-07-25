@@ -29,9 +29,9 @@ type ControllerConfigImages struct {
 	Etcd                string `json:"etcd"`
 	InfraImage          string `json:"infraImage"`
 	KubeClientAgent     string `json:"kubeClientAgentImage"`
-	Keepalived          string `json:"keepalived"`
-	Coredns             string `json:"coredns"`
-	MdnsPublisher       string `json:"mdnsPublisher"`
-	Haproxy             string `json:"haproxy"`
-	BaremetalRuntimeCfg string `json:"baremetalRuntimeCfg"`
+	Keepalived          string `json:"keepalivedImage"`
+	Coredns             string `json:"corednsImage"`
+	MdnsPublisher       string `json:"mdnsPublisherImage"`
+	Haproxy             string `json:"haproxyImage"`
+	BaremetalRuntimeCfg string `json:"baremetalRuntimeCfgImage"`
 }
