@@ -11,7 +11,7 @@ contents:
         cache 30
         reload
         hosts /etc/coredns/api-int.hosts {{ .EtcdDiscoveryDomain }} {
-            {{ .Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }} api-int.{{ .EtcdDiscoveryDomain }}
+            {{ .Infra.Status.PlatformStatus.OpenStack.APIServerInternalIP }} api-int.{{ .EtcdDiscoveryDomain }} api.{{ .EtcdDiscoveryDomain }}
             fallthrough
         }
     }
