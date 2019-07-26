@@ -1,6 +1,6 @@
 filesystem: "root"
 mode: 0644
-path: "/etc/kubernetes/static-pod-resources/coredns/node-dns-db"
+path: "/etc/coredns/node-dns-db"
 contents:
   inline: |
     $ORIGIN {{ .EtcdDiscoveryDomain }}.
