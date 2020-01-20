@@ -87,6 +87,7 @@ type ControllerConfigSpec struct {
 	AdditionalTrustBundle []byte `json:"additionalTrustBundle"`
 
 	// TODO: Investigate using a ConfigMapNameReference for the PullSecret and OSImageURL
+	OpenStackCACertificate []byte `json:"openstackCACertificate"`
 
 	// pullSecret is the default pull secret that needs to be installed
 	// on all machines.

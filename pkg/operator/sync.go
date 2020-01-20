@@ -206,6 +206,16 @@ func (optr *Operator) syncRenderConfig(_ *renderConfig) error {
 		spec.CloudProviderConfig = cc
 	}
 
+	if spec.Platform == "openstack" {
+		if infra.Spec.CloudConfig.Name != "" {
+			openstackCACert, err := optr.getCAsFromConfigMap("openshift-config", infra.Spec.CloudConfig.Name, "ca-bundle.pem")
+			if err != nil && !apierrors.IsNotFound(err) {
+				return err
+			}
+			spec.OpenStackCACertificate = openstackCACert
+		}
+	}
+
 	spec.KubeAPIServerServingCAData = kubeAPIServerServingCABytes
 	spec.EtcdCAData = etcdCA
 	spec.EtcdMetricCAData = etcdMetricCA
