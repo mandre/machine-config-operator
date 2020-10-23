@@ -21,6 +21,7 @@ contents: |
     /usr/bin/podman run --rm \
     --authfile /var/lib/kubelet/config.json \
     --volume /etc/systemd/system:/etc/systemd/system:z \
+    --volume /etc/kubernetes/manifests:/etc/kubernetes/manifests:z \
     --net=host \
     {{ .Images.baremetalRuntimeCfgImage }} \
     node-ip \
